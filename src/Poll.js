@@ -51,7 +51,7 @@ class Poll {
 	}
 	
 	getLink() {
-		return `http://sentry-evaera.c9users.io/${this.id}`;
+		return `http://104.131.194.240:7654/${this.id}`;
 	}
 	
 	configure(data) {

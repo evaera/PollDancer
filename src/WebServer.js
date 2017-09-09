@@ -44,4 +44,4 @@ web.get('/:id', (req, res) => {
 	res.sendFile(path.join(__dirname, '..', 'static', 'poll.html'));
 });
 
-web.listen(process.env.PORT);
+web.listen(process.env.PORT || 7654);
