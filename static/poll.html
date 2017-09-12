@@ -104,6 +104,11 @@
 				  <input type="checkbox" id="hide-author" class="mdl-checkbox__input">
 				  <span class="mdl-checkbox__label">Hide author</span>
 				</label>
+				
+				<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="pie-chart">
+				  <input type="checkbox" id="pie-chart" class="mdl-checkbox__input">
+				  <span class="mdl-checkbox__label">Include pie chart</span>
+				</label>
 			</div>
 		  	
 		  	<div>
@@ -247,6 +252,7 @@
 					singleResponse: $('#single-vote').prop('checked') || false,
 					aggregate: $('#aggregate').prop('checked') || false,
 					hideAuthor: $('#hide-author').prop('checked') || false,
+					pieChart: $('#pie-chart').prop('checked') || false,
 					answers: []
 				}
 				

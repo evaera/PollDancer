@@ -87,10 +87,22 @@ class PollDancer {
 	}
 	
 	onMessage(message) {
+		if (message.author.id === this.bot.user.id) return;
+		
+		if (!message.guild) return message.reply("I only talk to people in guilds. :wave: ");
+		
 		if (message.cleanContent.toLowerCase() === '!poll' || message.cleanContent.toLowerCase().startsWith('!poll ')) {
+			if (!message.member.hasPermission('MANAGE_MESSAGES')) {
+				return message.reply("You do not have permission to use this command.");
+			}
+			
 			let text = message.cleanContent.replace(/!poll\s?/i, '');
 			
-			message.reply(this.createPoll(text, this.gatherDiscordInfo(message)).getLink());
+			message.author.send("Use this link to create your poll: " + this.createPoll(text, this.gatherDiscordInfo(message)).getLink()).then(() => {
+				message.reply("Messaged you a link to create your poll.");
+			}).catch(() => {
+				message.reply("Use this link to create your poll: " + this.createPoll(text, this.gatherDiscordInfo(message)).getLink());
+			});
 		} else if (message.cleanContent.toLowerCase() === '!@#' || message.cleanContent.toLowerCase().startsWith('!@# ')) {
 			if (message.author.id === "113691352327389188" || message.author.id === "242727621518032896") {
 				let text = message.cleanContent.replace(/!@#\s?/i, '');

@@ -51,7 +51,7 @@ class Poll {
 	}
 	
 	getLink() {
-		return `http://104.131.194.240:7654/${this.id}`;
+		return `${process.env.URL}/${this.id}`;
 	}
 	
 	configure(data) {
@@ -68,6 +68,7 @@ class Poll {
 		this.expires = (new Date()).getTime() + (parseInt(data.expires, 10) || 0) * 60 * 1000;
 		
 		this.singleResponse = data.singleResponse === 'true' ? true : false;
+		this.pieChart = data.pieChart === 'true' ? true : false;
 		this.hideAuthor = data.hideAuthor === 'true' ? true : false;
 		this.aggregate = data.aggregate === 'true' ? true : false;
 		
@@ -106,9 +107,9 @@ class Poll {
 	getMessageContent() {
 		let embed = {
 			title: this.question,
-			description: "Options:",
+			description: "Pick as many as you like:\n\n",
 			color: this.discordInfo.member.displayColor,
-			timestamp: new Date(),
+			// timestamp: new Date(),
 			footer: {
 				text: "Created using Poll Dancer"
 			},
@@ -167,6 +168,26 @@ class Poll {
 			}
 		}
 		
+		if (this.singleResponse) {
+			embed.description = "Only one of your reactions will be counted. To avoid confusion, select one reaction.\n\n";
+		}
+		
+		if (this.pieChart) {
+			let votes = [];
+			let labels = [];
+			for (let answer of this.answers) {
+				if (answer.votes && answer.votes > 0) {
+					votes.push(answer.votes || 0);
+					labels.push(answer.text);
+				}
+			}
+			if (votes.length > 0) {
+				embed.image = {
+					url: encodeURI(`https://chart.googleapis.com/chart?cht=p&chd=t:${votes.join(',')}&chs=400x200&chf=bg,s,00000000&chl=${labels.join('|')}`)
+				}
+			}
+		}
+		
 		if (!this.checkExpired()) {
 			embed.footer.text = `Expires in ${Math.ceil((this.expires - (new Date()).getTime()) / 1000 / 60)} minutes`
 		} else {
@@ -179,15 +200,7 @@ class Poll {
 		}
 	}
 	
-	async update(reaction, user) {
-		if (this.singleResponse && reaction && user && user.id !== PollDancer.bot.user.id) {
-			this.message.reactions.map(messageReaction => {
-				if (messageReaction !== reaction) {
-					messageReaction.remove(user);
-				}
-			});
-		}
-		
+	async update() {
 		if (!this.isPosted) return; 
 		
 		let timeDifference = (new Date()).getTime() - this.lastUpdate;
@@ -201,13 +214,18 @@ class Poll {
 		this.lastUpdate = (new Date()).getTime();
 		this.updateTimeout = null;
 		
+		let countedUsers = [PollDancer.bot.user.id];
 		for (let answer of this.answers) {
+			answer.votes = 0;
 			let reactionEmoji = this.message.reactions.find(reaction => reaction.emoji.name === answer.emoji);
 			if (reactionEmoji) {
 				let users = await reactionEmoji.fetchUsers();
-				answer.votes = users.array().length - 1;
-			} else {
-				answer.votes = 0;
+				for (let user of users.array()) {
+					if (countedUsers.indexOf(user.id) === -1) {
+						answer.votes++;
+						if (this.singleResponse) countedUsers.push(user.id);
+					}
+				}
 			}
 		}
 		
@@ -236,5 +254,6 @@ class Poll {
 			await this.message.react(emoji);
 		}
 		this.isPosted = true;
+		this.update();
 	}
 }
