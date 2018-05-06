@@ -118,7 +118,7 @@ class Poll {
 			},
 			author: {
 				name: this.discordInfo.member.user.tag,
-				icon_url: this.discordInfo.member.user.displayAvatarURL()
+				icon_url: this.discordInfo.member.user.displayAvatarURL
 			},
 			fields: []
 		};
