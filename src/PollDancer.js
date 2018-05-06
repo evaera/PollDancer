@@ -14,8 +14,15 @@ class PollDancer {
 		this.bot.on('message', this.onMessage.bind(this));
 		this.bot.on('messageReactionAdd', this.onReactionAdd.bind(this));
 		this.bot.on('messageReactionRemove', this.onReactionRemove.bind(this));
+		this.bot.on('ready', this.ready.bind(this));
 		
 		this.bot.login(process.env.TOKEN);
+	}
+
+	ready() {
+		const bot = this.bot
+		bot.user.setActivity('eryn.io/PollDancer')
+		setInterval(() => bot.user.setActivity('eryn.io/PollDancer'), 1000000)
 	}
 	
 	createPoll(question, discordInfo) {
