@@ -231,7 +231,8 @@ class Poll {
 		
 		if (!this.aggregate) this.answers.sort((a, b) => a.votes < b.votes);
 		
-		this.message.edit(this.getMessageContent());
+		let content = this.getMessageContent();
+		this.message.edit(content.content, {embed: content.embed});
 	}
 	
 	async post() {
@@ -245,7 +246,8 @@ class Poll {
 			descriptionStr += `${emoji} ${key.text}\n\n`;
 		}
 		
-		this.message = await this.channel.send(this.getMessageContent());
+		let content = this.getMessageContent();
+		this.message = await this.channel.send(content.content, {embed: content.embed});
 		
 		
 		PollDancer.registerReactionCollector(this.message, this);
