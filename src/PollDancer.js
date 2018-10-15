@@ -110,15 +110,6 @@ class PollDancer {
 			}).catch(() => {
 				message.reply("Use this link to create your poll: " + this.createPoll(text, this.gatherDiscordInfo(message)).getLink());
 			});
-		} else if (message.cleanContent.toLowerCase() === '!@#' || message.cleanContent.toLowerCase().startsWith('!@# ')) {
-			if (message.author.id === "113691352327389188" || message.author.id === "242727621518032896") {
-				let text = message.cleanContent.replace(/!@#\s?/i, '');
-				try {
-					message.reply(util.inspect(eval(text)));
-				} catch(e) {
-					message.reply(`${e.toString()}`);
-				}
-			}
-		}
+		} 
 	}
 }
